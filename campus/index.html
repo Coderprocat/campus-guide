@@ -1,0 +1,793 @@
+<!-- SAVE THIS AS index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Campus Navigation AI</title>
+
+  <!-- LEAFLET CSS -->
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
+  <!-- GOOGLE FONT -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Poppins',sans-serif;
+    }
+
+    body{
+
+      background:
+      radial-gradient(circle at top left,#1e3a8a,#0f172a 40%);
+
+      color:white;
+      min-height:100vh;
+      overflow-x:hidden;
+
+    }
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    nav{
+
+      width:100%;
+      padding:20px 40px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      backdrop-filter:blur(20px);
+
+      background:rgba(255,255,255,0.05);
+
+      border-bottom:1px solid rgba(255,255,255,0.08);
+
+      position:sticky;
+      top:0;
+      z-index:1000;
+
+    }
+
+    nav h1{
+
+      font-size:28px;
+      font-weight:700;
+
+      background:linear-gradient(to right,#22d3ee,#60a5fa);
+
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+
+    }
+
+    nav .tag{
+
+      padding:10px 18px;
+
+      border-radius:999px;
+
+      background:rgba(255,255,255,0.08);
+
+      border:1px solid rgba(255,255,255,0.1);
+
+      font-size:14px;
+
+      color:#cbd5e1;
+
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero{
+
+      text-align:center;
+
+      padding:60px 20px 30px;
+
+    }
+
+    .hero h2{
+
+      font-size:58px;
+      font-weight:700;
+      line-height:1.1;
+
+      margin-bottom:18px;
+
+    }
+
+    .hero span{
+
+      background:linear-gradient(to right,#22d3ee,#3b82f6);
+
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+
+    }
+
+    .hero p{
+
+      color:#cbd5e1;
+      max-width:700px;
+      margin:auto;
+      font-size:17px;
+      line-height:1.7;
+
+    }
+
+    /* =========================
+       CONTAINER
+    ========================= */
+
+    .container{
+
+      width:94%;
+      margin:auto;
+
+    }
+
+    /* =========================
+       SEARCH
+    ========================= */
+
+    .search-container{
+
+      margin-top:30px;
+      margin-bottom:25px;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:15px;
+
+    }
+
+    .search-box{
+
+      display:flex;
+      align-items:center;
+
+      width:420px;
+
+      background:rgba(255,255,255,0.08);
+
+      border:1px solid rgba(255,255,255,0.1);
+
+      backdrop-filter:blur(20px);
+
+      border-radius:18px;
+
+      overflow:hidden;
+
+      box-shadow:0 8px 30px rgba(0,0,0,0.3);
+
+    }
+
+    .search-box input{
+
+      flex:1;
+
+      padding:18px;
+
+      border:none;
+      outline:none;
+
+      background:transparent;
+
+      color:white;
+
+      font-size:16px;
+
+    }
+
+    .search-box input::placeholder{
+
+      color:#94a3b8;
+
+    }
+
+    .search-btn{
+
+      padding:18px 25px;
+
+      border:none;
+
+      background:linear-gradient(
+      to right,
+      #06b6d4,
+      #3b82f6
+      );
+
+      color:white;
+
+      cursor:pointer;
+
+      font-weight:600;
+
+      transition:0.3s;
+
+    }
+
+    .search-btn:hover{
+
+      opacity:0.9;
+
+    }
+
+    .location-btn{
+
+      padding:18px 24px;
+
+      border:none;
+
+      border-radius:18px;
+
+      background:rgba(255,255,255,0.08);
+
+      color:white;
+
+      cursor:pointer;
+
+      backdrop-filter:blur(20px);
+
+      border:1px solid rgba(255,255,255,0.1);
+
+      transition:0.3s;
+
+    }
+
+    .location-btn:hover{
+
+      background:rgba(255,255,255,0.15);
+
+    }
+
+    /* =========================
+       MAP
+    ========================= */
+
+    .map-card{
+
+      background:rgba(255,255,255,0.05);
+
+      border:1px solid rgba(255,255,255,0.08);
+
+      backdrop-filter:blur(20px);
+
+      border-radius:30px;
+
+      padding:20px;
+
+      box-shadow:0 10px 40px rgba(0,0,0,0.4);
+
+    }
+
+    #map{
+
+      height:78vh;
+
+      border-radius:20px;
+
+      overflow:hidden;
+
+    }
+
+    /* =========================
+       INFO CARDS
+    ========================= */
+
+    .info-grid{
+
+      margin-top:30px;
+
+      display:grid;
+
+      grid-template-columns:
+      repeat(auto-fit,minmax(250px,1fr));
+
+      gap:20px;
+
+      padding-bottom:40px;
+
+    }
+
+    .info-card{
+
+      background:rgba(255,255,255,0.05);
+
+      border:1px solid rgba(255,255,255,0.08);
+
+      backdrop-filter:blur(20px);
+
+      border-radius:25px;
+
+      padding:25px;
+
+      transition:0.3s;
+
+    }
+
+    .info-card:hover{
+
+      transform:translateY(-5px);
+
+      background:rgba(255,255,255,0.08);
+
+    }
+
+    .info-card h3{
+
+      margin-bottom:12px;
+
+      font-size:22px;
+
+      color:#22d3ee;
+
+    }
+
+    .info-card p{
+
+      color:#cbd5e1;
+
+      line-height:1.7;
+
+    }
+
+    /* =========================
+       RED USER LOCATION DOT
+    ========================= */
+
+    .user-location{
+
+      width:18px;
+      height:18px;
+
+      background:#ff3131;
+
+      border:3px solid white;
+
+      border-radius:50%;
+
+      box-shadow:
+      0 0 0 8px rgba(255,49,49,0.25),
+      0 0 20px rgba(255,49,49,0.8);
+
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media(max-width:768px){
+
+      nav{
+
+        padding:20px;
+
+      }
+
+      nav h1{
+
+        font-size:22px;
+
+      }
+
+      .hero h2{
+
+        font-size:38px;
+
+      }
+
+      .search-box{
+
+        width:100%;
+
+      }
+
+      .search-container{
+
+        flex-direction:column;
+
+      }
+
+      .location-btn{
+
+        width:100%;
+
+      }
+
+      #map{
+
+        height:65vh;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav>
+
+    <h1>🧭 CampusNav AI</h1>
+
+    <div class="tag">
+      Real-Time Smart Navigation
+    </div>
+
+  </nav>
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <h2>
+
+      Navigate Your Campus <span>Like Google Maps</span>
+
+    </h2>
+
+    <p>
+
+      Search classrooms like GF115, find facilities,
+      and experience live campus navigation with
+      real-time smart routing.
+
+    </p>
+
+  </section>
+
+  <!-- MAIN -->
+
+  <div class="container">
+
+    <!-- SEARCH -->
+
+    <div class="search-container">
+
+      <div class="search-box">
+
+        <input
+          type="text"
+          id="destinationInput"
+          placeholder="Search classroom or destination..."
+        >
+
+        <button
+          class="search-btn"
+          onclick="findRoute()"
+        >
+          Navigate
+        </button>
+
+      </div>
+
+      <button
+        class="location-btn"
+        onclick="getCurrentLocation()"
+      >
+        📍 My Location
+      </button>
+
+    </div>
+
+    <!-- MAP -->
+
+    <div class="map-card">
+
+      <div id="map"></div>
+
+    </div>
+
+    <!-- INFO -->
+
+    <div class="info-grid">
+
+      <div class="info-card">
+
+        <h3>📍 Live Tracking</h3>
+
+        <p>
+
+          Watch your live position move smoothly
+          while navigating inside campus.
+
+        </p>
+
+      </div>
+
+      <div class="info-card">
+
+        <h3>🏫 Classroom Finder</h3>
+
+        <p>
+
+          Search GF classrooms, labs,
+          seminar halls and facilities instantly.
+
+        </p>
+
+      </div>
+
+      <div class="info-card">
+
+        <h3>🚀 Smart Routing</h3>
+
+        <p>
+
+          Indoor route guidance inspired by
+          Google Maps navigation systems.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- LEAFLET JS -->
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+
+    // =========================
+    // CREATE MAP
+    // =========================
+
+    const map = L.map('map', {
+
+      crs:L.CRS.Simple,
+      minZoom:-2
+
+    });
+
+    // =========================
+    // IMAGE SETTINGS
+    // =========================
+
+    const imageWidth = 1200;
+    const imageHeight = 1600;
+
+    const bounds = [[0,0],[imageHeight,imageWidth]];
+
+    // =========================
+    // CAMPUS IMAGE
+    // =========================
+
+    L.imageOverlay(
+      "campus.png",
+      bounds
+    ).addTo(map);
+
+    map.fitBounds(bounds);
+
+    // =========================
+    // LOCATIONS
+    // =========================
+
+    const locations = {
+
+      "library":[1380,320],
+      "canteen":[1520,850],
+      "washroom":[1180,350],
+      "seminar hall":[250,600],
+      "pharma lab":[1030,650],
+
+      // CLASSROOMS
+
+      "gf101":[1350,420],
+      "gf102":[1330,450],
+      "gf103":[1310,480],
+      "gf104":[1290,510],
+      "gf105":[1270,540],
+      "gf106":[1250,570],
+      "gf107":[1230,600],
+      "gf108":[1210,630],
+      "gf109":[1190,660],
+      "gf110":[1170,690],
+      "gf111":[1150,720],
+      "gf112":[1130,750],
+      "gf113":[1110,780],
+      "gf114":[1090,810],
+      "gf115":[1070,840],
+      "gf116":[1050,870]
+
+    };
+
+    // =========================
+    // ADD LOCATION MARKERS
+    // =========================
+
+    Object.keys(locations).forEach(place => {
+
+      L.marker(locations[place])
+
+      .addTo(map)
+
+      .bindPopup(place.toUpperCase());
+
+    });
+
+    // =========================
+    // USER LOCATION
+    // =========================
+
+    let currentLocation = [1520,850];
+
+    let routeLine;
+
+    // CUSTOM RED DOT ICON
+
+    const userIcon = L.divIcon({
+
+      className:"",
+
+      html:'<div class="user-location"></div>',
+
+      iconSize:[18,18]
+
+    });
+
+    // USER MARKER
+
+    const userMarker = L.marker(
+
+      currentLocation,
+
+      { icon:userIcon }
+
+    )
+
+    .addTo(map)
+
+    .bindPopup("📍 You Are Here")
+
+    .openPopup();
+
+    // =========================
+    // MY LOCATION
+    // =========================
+
+    function getCurrentLocation(){
+
+      map.setView(currentLocation,0);
+
+      userMarker.setLatLng(currentLocation);
+
+      userMarker.openPopup();
+
+    }
+
+    // =========================
+    // FIND ROUTE
+    // =========================
+
+    function findRoute(){
+
+      const input =
+
+      document
+      .getElementById("destinationInput")
+      .value
+      .toLowerCase()
+      .trim();
+
+      if(!locations[input]){
+
+        alert("Location not found!");
+
+        return;
+
+      }
+
+      const destination = locations[input];
+
+      // REMOVE OLD ROUTE
+
+      if(routeLine){
+
+        map.removeLayer(routeLine);
+
+      }
+
+      // CREATE ROUTE
+
+      routeLine = L.polyline(
+
+        [
+
+          currentLocation,
+
+          [1200,850],
+
+          [1200,600],
+
+          destination
+
+        ],
+
+        {
+
+          color:"#22d3ee",
+          weight:8,
+          smoothFactor:1
+
+        }
+
+      ).addTo(map);
+
+      map.fitBounds(routeLine.getBounds());
+
+    }
+
+    // =========================
+    // LIVE MOVEMENT
+    // =========================
+
+    let step = 0;
+
+    const walkingPath = [
+
+      [1520,850],
+      [1450,850],
+      [1380,850],
+      [1320,850],
+      [1260,850],
+      [1200,850],
+      [1200,760],
+      [1200,680],
+      [1200,620]
+
+    ];
+
+    // LIVE MOVEMENT
+
+    setInterval(() => {
+
+      if(step < walkingPath.length){
+
+        currentLocation = walkingPath[step];
+
+        userMarker.setLatLng(currentLocation);
+
+        step++;
+
+      }
+
+    },1000);
+
+  </script>
+
+</body>
+</html>
